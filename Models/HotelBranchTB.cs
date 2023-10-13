@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Hotel_Management.Models
+namespace Hotel_Managment_API.Models
 {
     public class HotelBranchTB
     {

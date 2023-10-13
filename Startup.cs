@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,6 +30,7 @@ namespace Hotel_Managment_API
         {
             services.AddControllers();
             services.AddDbContext<DataContext>(o => o.UseSqlServer(Configuration.GetSection("ConnectionStrings:hotelDB").Value));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,10 +41,22 @@ namespace Hotel_Managment_API
                 app.UseDeveloperExceptionPage();
             }
 
+
             app.UseRouting();
 
             app.UseAuthorization();
+            //app.UseStaticFiles();
+            string directoryPath = Path.Combine(env.ContentRootPath, "./Public/images");
 
+            // Configure the file provider
+            var fileProvider = new PhysicalFileProvider(directoryPath);
+            //var fileProvider = new PhysicalFileProvider("");
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = fileProvider,
+                RequestPath = "/api/img" // Optional: Set a virtual path
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
