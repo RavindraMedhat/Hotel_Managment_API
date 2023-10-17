@@ -30,31 +30,42 @@ namespace Hotel_Managment_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HotelViewModelForIndex>>> Gethotels()
         {
-            List<ImageMasterTB> staticImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+            List<ImageMasterTB> HotelsImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                   where i.ReferenceTB_Name=="Hotel"
                                                    select i).ToList();
 
             List<HotelViewModelForIndex> data = (from h in await _context.hotels.ToListAsync()
+                                                 where h.Delete_Flag==false
                                                 select new HotelViewModelForIndex
                                                 {
                                                     Hotel_ID = h.Hotel_ID,
                                                     Hotel_Name = h.Hotel_Name,
-                                                    Image_URl = staticImageUrls.Where(i=> i.Reference_ID==h.Hotel_ID).Select(i=> "http://localhost:17312/api/img/hotels/"+i.Image_URl).ToList()
+                                                    Image_URl = HotelsImageUrls.Where(i=> i.Reference_ID==h.Hotel_ID).Select(i=> "http://localhost:17312/api/img/hotels/"+i.Image_URl).ToList()
                                                 }).ToList();
             return data;
         }
 
         // GET: api/HotelTBs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HotelTB>> GetHotelTB(int id)
+        public async Task<ActionResult<HotelViewModelForDetails>> GetHotelTB(int id)
         {
+
             var hotelTB = await _context.hotels.FindAsync(id);
+            List<string> AllImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                where i.Reference_ID==hotelTB.Hotel_ID && i.ReferenceTB_Name=="Hotel"
+                                                   select "http://localhost:17312/api/img/hotels/" + i.Image_URl).ToList();
+
+           
+            HotelViewModelForDetails hotelViewModelForDetails = new HotelViewModelForDetails { Active_Flag= hotelTB.Active_Flag,Address= hotelTB.Address,Contact_No= hotelTB.Contact_No,Contect_Person= hotelTB.Contect_Person,Delete_Flag= hotelTB.Delete_Flag,Email_Adderss= hotelTB.Email_Adderss,Hotel_Description= hotelTB.Hotel_Description,Hotel_map_coordinate= hotelTB.Hotel_map_coordinate,Hotel_Name= hotelTB.Hotel_Name,sortedfield= hotelTB.sortedfield,Standard_check_In_Time= hotelTB.Standard_check_In_Time,Standard_check_out_Time= hotelTB.Standard_check_out_Time,Hotel_ID=hotelTB.Hotel_ID , images= AllImageUrls };
+
+        
 
             if (hotelTB == null)
             {
                 return NotFound();
             }
 
-            return hotelTB;
+            return hotelViewModelForDetails;
         }
 
         // PUT: api/HotelTBs/5
@@ -140,8 +151,8 @@ namespace Hotel_Managment_API.Controllers
             {
                 return NotFound();
             }
-
-            _context.hotels.Remove(hotelTB);
+            hotelTB.Delete_Flag = true;
+           // _context.hotels.Remove(hotelTB);
             await _context.SaveChangesAsync();
 
             return hotelTB;
