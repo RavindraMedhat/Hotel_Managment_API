@@ -16,5 +16,9 @@ namespace Hotel_Managment_API.DBContext
         public DbSet<HotelTB> hotels => Set<HotelTB>();
         public DbSet<HotelBranchTB> hotelBranchTBs => Set<HotelBranchTB>();
         public DbSet<ImageMasterTB> imageMasterTBs => Set<ImageMasterTB>();
+
+        public DbSet<RoomCategoryTB> RoomCategoryTB => Set<RoomCategoryTB>();
+
+
     }
 }

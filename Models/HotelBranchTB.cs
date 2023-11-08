@@ -16,8 +16,8 @@ namespace Hotel_Managment_API.Models
         [ForeignKey("Hotel_ID")] 
         public int Hotel_ID { get; set; }
 
-        [Required]
-        [MaxLength(50, ErrorMessage = "Name can not more than 50 character")]
+            [Required]
+            [MaxLength(50, ErrorMessage = "Name can not more than 50 character")]
         public string Branch_Name { get; set; }
         [Required]
         [MaxLength(300, ErrorMessage = "Description can not more than 300 character")]
