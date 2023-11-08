@@ -40,9 +40,26 @@ namespace Hotel_Managment_API.Controllers
                                                 {
                                                     Hotel_ID = h.Hotel_ID,
                                                     Hotel_Name = h.Hotel_Name,
+
                                                     Image_URl = HotelsImageUrls.Where(i=> i.Reference_ID==h.Hotel_ID).Select(i=> "http://localhost:17312/api/img/hotels/"+i.Image_URl).ToList()
                                                 }).ToList();
             return data;
+        }
+
+        // GET: api/HotelTBs/ForDropDown
+        [HttpGet("ForDropDown")]
+        public async Task<ActionResult<IEnumerable<HotelNameAndIdViewModel>>> GetHotelsForDropDown()
+        {
+            var hotels = await _context.hotels
+                .Where(h => !h.Delete_Flag)
+                .Select(h => new HotelNameAndIdViewModel
+                {
+                    Hotel_ID = h.Hotel_ID,
+                    Hotel_Name = h.Hotel_Name
+                })
+                .ToListAsync();
+
+            return hotels;
         }
 
         // GET: api/HotelTBs/5
@@ -67,6 +84,8 @@ namespace Hotel_Managment_API.Controllers
 
             return hotelViewModelForDetails;
         }
+
+
 
         // PUT: api/HotelTBs/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -141,6 +160,7 @@ namespace Hotel_Managment_API.Controllers
 
             return CreatedAtAction("GetHotelTB", new { id = hotelTB.Hotel_ID }, hotelTB);
         }
+        
 
         // DELETE: api/HotelTBs/5
         [HttpDelete("{id}")]
@@ -163,4 +183,9 @@ namespace Hotel_Managment_API.Controllers
             return _context.hotels.Any(e => e.Hotel_ID == id);
         }
     }
+}
+public class HotelNameAndIdViewModel
+{
+    public int Hotel_ID { get; set; }
+    public string Hotel_Name { get; set; }
 }
