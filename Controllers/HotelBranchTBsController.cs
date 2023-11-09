@@ -122,6 +122,7 @@ namespace Hotel_Managment_API.Controllers
         public async Task<ActionResult<HotelBranchTB>> PostHotelBranchTB([FromForm] HotelBranchCreateModel hotelBranchcreatemodel)
         {
             HotelBranchTB hotelBranchTB = new HotelBranchTB { Active_Flag = hotelBranchcreatemodel.Active_Flag, Branch_Address = hotelBranchcreatemodel.Branch_Address, Branch_Contact_No = hotelBranchcreatemodel.Branch_Contact_No, Branch_Contect_Person = hotelBranchcreatemodel.Branch_Contect_Person, Delete_Flag = hotelBranchcreatemodel.Delete_Flag, Branch_Email_Adderss = hotelBranchcreatemodel.Branch_Email_Adderss, Branch_Description = hotelBranchcreatemodel.Branch_Description, Branch_map_coordinate = hotelBranchcreatemodel.Branch_map_coordinate, Branch_Name = hotelBranchcreatemodel.Branch_Name, sortedfield = hotelBranchcreatemodel.sortedfield,Hotel_ID=hotelBranchcreatemodel.Hotel_ID};
+
             _context.hotelBranchTBs.Add(hotelBranchTB);
             await _context.SaveChangesAsync();
 
