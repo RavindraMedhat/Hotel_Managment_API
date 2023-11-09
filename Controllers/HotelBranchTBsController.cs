@@ -53,6 +53,22 @@ namespace Hotel_Managment_API.Controllers
             return data;
         }
 
+        //get hotel branch for dropdown
+
+        [HttpGet("ForDropDown")]
+        public async Task<ActionResult<IEnumerable<BranchNameAndIdViewModel>>> GetHotelBranchForDropDown()
+        {
+            var Branch = await _context.hotelBranchTBs
+                .Where(b => !b.Delete_Flag)
+                .Select(b => new BranchNameAndIdViewModel
+                {
+                    Branch_ID = b.Branch_ID,
+                    Branch_Name = b.Branch_Name
+                })
+                .ToListAsync();
+
+            return Branch;
+        }
         // GET: api/HotelBranchTBs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<HotelBranchTB>> GetHotelBranchTB(int id)
@@ -163,4 +179,9 @@ namespace Hotel_Managment_API.Controllers
             return _context.hotelBranchTBs.Any(e => e.Branch_ID == id);
         }
     }
+}
+public class BranchNameAndIdViewModel
+{
+    public int Branch_ID { get; set; }
+    public string Branch_Name { get; set; }
 }
