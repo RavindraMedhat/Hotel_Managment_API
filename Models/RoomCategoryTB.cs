@@ -19,7 +19,7 @@ namespace Hotel_Managment_API.Models
         [MaxLength(50, ErrorMessage = "Name can not more than 50 character")]
         public string Category_Name { get; set; }
         [Required]
-        [MaxLength(50, ErrorMessage = "Name can not more than 300 character")]
+        [MaxLength(300, ErrorMessage = "Description can not more than 300 character")]
         public string Description { get; set; }
         [Required]
         public bool Active_Flag { get; set; }

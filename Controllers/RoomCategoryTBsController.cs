@@ -25,19 +25,21 @@ namespace Hotel_Managment_API.Controllers
             _env = env;
 
         }
+  
 
         // GET: api/RoomCategoryTBs
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomCategoryTB>>> GetRoomCategoryTB()
         {
-            return await _context.RoomCategoryTB.ToListAsync();
+            return await _context.roomCategoryTB.ToListAsync();
         }
 
+        
         // GET: api/RoomCategoryTBs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RoomCategoryTB>> GetRoomCategoryTB(int id)
         {
-            var roomCategoryTB = await _context.RoomCategoryTB.FindAsync(id);
+            var roomCategoryTB = await _context.roomCategoryTB.FindAsync(id);
 
             if (roomCategoryTB == null)
             {
@@ -85,7 +87,7 @@ namespace Hotel_Managment_API.Controllers
         [HttpPost]
         public async Task<ActionResult<RoomCategoryTB>> PostRoomCategoryTB(RoomCategoryTB roomCategoryTB)
         {
-            _context.RoomCategoryTB.Add(roomCategoryTB);
+            _context.roomCategoryTB.Add(roomCategoryTB);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRoomCategoryTB", new { id = roomCategoryTB.Category_ID }, roomCategoryTB);
@@ -95,13 +97,13 @@ namespace Hotel_Managment_API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<RoomCategoryTB>> DeleteRoomCategoryTB(int id)
         {
-            var roomCategoryTB = await _context.RoomCategoryTB.FindAsync(id);
+            var roomCategoryTB = await _context.roomCategoryTB.FindAsync(id);
             if (roomCategoryTB == null)
             {
                 return NotFound();
             }
 
-            _context.RoomCategoryTB.Remove(roomCategoryTB);
+            _context.roomCategoryTB.Remove(roomCategoryTB);
             await _context.SaveChangesAsync();
 
             return roomCategoryTB;
@@ -109,7 +111,7 @@ namespace Hotel_Managment_API.Controllers
 
         private bool RoomCategoryTBExists(int id)
         {
-            return _context.RoomCategoryTB.Any(e => e.Category_ID == id);
+            return _context.roomCategoryTB.Any(e => e.Category_ID == id);
         }
     }
 }
