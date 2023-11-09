@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
+using Hotel_Managment_API.ViewModels;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -29,15 +30,34 @@ namespace Hotel_Managment_API.Controllers
 
         // GET: api/RoomCategoryTBs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoomCategoryTB>>> GetRoomCategoryTB()
+        public async Task<ActionResult<IEnumerable<RoomCategoryTBForDetail>>> GetRoomCategoryTB()
         {
-            return await _context.roomCategoryTB.ToListAsync();
+            List<HotelBranchTB> hotelBranchTBs = await _context.hotelBranchTBs.ToListAsync();
+
+            List<RoomCategoryTBForDetail> roomCategoryTBForDetail = (from rc in await _context.roomCategoryTB.ToListAsync()
+                                                                    where rc.Delete_Flag== false 
+                                                                    select new RoomCategoryTBForDetail
+                                                                    {   
+                                                                        Category_ID = rc.Category_ID,
+                                                                        Category_Name = rc.Category_Name,
+                                                                        Branch_Name =   (from hb in hotelBranchTBs
+                                                                                        where hb.Branch_ID == hb.Branch_ID
+                                                                                        select hb.Branch_Name).FirstOrDefault(),
+                                                                        Active_Flag=rc.Active_Flag,
+                                                                        Delete_Flag=rc.Delete_Flag,
+                                                                        Description=rc.Description,
+                                                                        sortedfield=rc.sortedfield
+                                                                    }).ToList();
+
+
+
+            return roomCategoryTBForDetail;
         }
 
         
         // GET: api/RoomCategoryTBs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RoomCategoryTB>> GetRoomCategoryTB(int id)
+        public async Task<ActionResult<RoomCategoryTBForDetail>> GetRoomCategoryTB(int id)
         {
             var roomCategoryTB = await _context.roomCategoryTB.FindAsync(id);
 
@@ -46,7 +66,11 @@ namespace Hotel_Managment_API.Controllers
                 return NotFound();
             }
 
-            return roomCategoryTB;
+            var hotelBranch = await _context.hotelBranchTBs.FindAsync(roomCategoryTB.Branch_ID);
+
+            RoomCategoryTBForDetail roomCategoryTBForDetail = new RoomCategoryTBForDetail { Active_Flag = roomCategoryTB.Active_Flag, Branch_Name = hotelBranch.Branch_Name, Category_ID = roomCategoryTB.Category_ID,Category_Name= roomCategoryTB.Category_Name,Delete_Flag= roomCategoryTB.Delete_Flag,Description= roomCategoryTB.Description,sortedfield= roomCategoryTB.sortedfield };
+
+            return roomCategoryTBForDetail;
         }
 
         // PUT: api/RoomCategoryTBs/5
