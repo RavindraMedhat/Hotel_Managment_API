@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
+using Hotel_Managment_API.ViewModels;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -29,12 +30,36 @@ namespace Hotel_Managment_API.Controllers
 
         // GET: api/RoomCategoryTBs
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoomCategoryTB>>> GetRoomCategoryTB()
+        public async Task<ActionResult<IEnumerable<RoomCategoryTBForDetail>>> GetRoomCategoryTB()
         {
-            return await _context.roomCategoryTB.ToListAsync();
+            List<(int, string)> HotelBranchdata = (from hb in await _context.hotelBranchTBs.ToListAsync()
+                                             select (hb.Branch_ID, hb.Branch_Name)).ToList();
+            List<RoomCategoryTBForDetail> roomCategoryTBForDetail = (from rcd in await _context.roomCategoryTB.ToListAsync()
+                                                                     where rcd.Delete_Flag == false
+                                                                     select new RoomCategoryTBForDetail
+                                                                     {
+                                                                         Category_ID = rcd.Category_ID,
+                                                                         Category_Name = rcd.Category_Name,
+                                                                         Description = rcd.Description,
+                                                                         Active_Flag = rcd.Active_Flag,
+                                                                         Delete_Flag = rcd.Delete_Flag,
+                                                                         sortedfield = rcd.sortedfield,
+                                                                         Branch_Name = (from hb in HotelBranchdata
+                                                                                        where hb.Item1 == rcd.Branch_ID
+                                                                                        select hb.Item2).FirstOrDefault()
+                                                                     }).ToList();
+            return roomCategoryTBForDetail;
+        }
+        [HttpGet("ByBranchID/{id}")]
+        public async Task<ActionResult<IEnumerable<RoomCategoryTBforcheckbox>>> GetHotelBranchByHotelID(int id)
+        {
+            List<RoomCategoryTBforcheckbox> roomCategoryTB = (from rc in await _context.roomCategoryTB.ToListAsync()
+                                                             where rc.Delete_Flag == false && rc.Branch_ID == id
+                                                   select new RoomCategoryTBforcheckbox { Category_ID= rc.Category_ID, Category_Name=rc.Category_Name }).ToList();
+            
+            return roomCategoryTB;
         }
 
-        
         // GET: api/RoomCategoryTBs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RoomCategoryTB>> GetRoomCategoryTB(int id)
@@ -114,4 +139,10 @@ namespace Hotel_Managment_API.Controllers
             return _context.roomCategoryTB.Any(e => e.Category_ID == id);
         }
     }
+}
+
+public class RoomCategoryTBforcheckbox
+{
+    public int Category_ID { get; set; }
+    public string Category_Name { get; set; }
 }

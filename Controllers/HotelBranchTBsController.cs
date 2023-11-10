@@ -31,9 +31,10 @@ namespace Hotel_Managment_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HotelBranchViewModelForIndex>>> GethotelBranchTBs()
         {
-            List<ImageMasterTB> HotelsImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+            List<ImageMasterTB> HotelBranchImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
                                                    where i.ReferenceTB_Name == "HotelBranch"
                                                    select i).ToList();
+
             List<(int, string)> Hoteldata = ( from h in await _context.hotels.ToListAsync()
                                             select (h.Hotel_ID,h.Hotel_Name)).ToList() ;
 
@@ -48,7 +49,7 @@ namespace Hotel_Managment_API.Controllers
                                                            Hotel_Name = (from h in Hoteldata
                                                                          where h.Item1 == hb.Hotel_ID
                                                                          select h.Item2).FirstOrDefault(),
-                                                           Image_URl = HotelsImageUrls.Where(i => i.Reference_ID == hb.Branch_ID).Select(i => "http://localhost:17312/api/img/hotelBranch/" + i.Image_URl).ToList()
+                                                           Image_URl = HotelBranchImageUrls.Where(i => i.Reference_ID == hb.Branch_ID).Select(i => "http://localhost:17312/api/img/hotelBranch/" + i.Image_URl).ToList()
                                                        }).ToList();
             return data;
         }
@@ -69,11 +70,64 @@ namespace Hotel_Managment_API.Controllers
 
             return Branch;
         }
+
+        [HttpGet("ByHotelID/{id}")]
+        public async Task<ActionResult<IEnumerable<HotelBranchViewModelForIndex>>> GetHotelBranchByHotelID(int id)
+        {
+            List<ImageMasterTB> HotelBranchImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                   where i.ReferenceTB_Name == "HotelBranch"
+                                                   select i).ToList();
+
+            List<(int, string)> Hoteldata = (from h in await _context.hotels.ToListAsync()
+                                             select (h.Hotel_ID, h.Hotel_Name)).ToList();
+
+            //return await _context.hotelBranchTBs.ToListAsync();
+
+            List<HotelBranchViewModelForIndex> data = (from hb in await _context.hotelBranchTBs.ToListAsync()
+                                                       where hb.Delete_Flag == false && hb.Hotel_ID==id
+                                                       select new HotelBranchViewModelForIndex
+                                                       {
+                                                           Branch_ID = hb.Branch_ID,
+                                                           Branch_Name = hb.Branch_Name,
+                                                           Hotel_Name = (from h in Hoteldata
+                                                                         where h.Item1 == hb.Hotel_ID
+                                                                         select h.Item2).FirstOrDefault(),
+                                                           Image_URl = HotelBranchImageUrls
+                                                           .Where(i => i.Reference_ID == hb.Branch_ID)
+                                                           .Select(i => "http://localhost:17312/api/img/hotelBranch/" + i.Image_URl).ToList()
+                                                       }).ToList();
+            return data;
+        }
+
         // GET: api/HotelBranchTBs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HotelBranchTB>> GetHotelBranchTB(int id)
+        public async Task<ActionResult<HotelBranchViewModelForDetails>> GetHotelBranchTB(int id)
         {
-            var hotelBranchTB = await _context.hotelBranchTBs.FindAsync(id);
+            List<string> HotelBranchImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                        where i.ReferenceTB_Name == "HotelBranch" && i.Reference_ID==id
+                                                        select @"http://localhost:17312/api/img/hotelBranch/" + i.Image_URl).ToList();
+
+            List<(int, string)> Hoteldata = (from h in await _context.hotels.ToListAsync()
+                                             select (h.Hotel_ID, h.Hotel_Name)).ToList();
+
+            var hotelBranchTB =( from hb in await _context.hotelBranchTBs.ToListAsync()
+                                where hb.Delete_Flag==false && hb.Branch_ID==id
+                                select new HotelBranchViewModelForDetails { 
+                                    Branch_ID=hb.Branch_ID,
+                                    Branch_Name=hb.Branch_Name,
+                                    Branch_Description=hb.Branch_Description,
+                                    Branch_map_coordinate=hb.Branch_map_coordinate,
+                                    Branch_Email_Adderss=hb.Branch_Email_Adderss,
+                                    Branch_Address=hb.Branch_Address,
+                                    Branch_Contact_No=hb.Branch_Contact_No,
+                                    Branch_Contect_Person=hb.Branch_Contect_Person,
+                                    Active_Flag=hb.Active_Flag,
+                                    Delete_Flag=hb.Delete_Flag,
+                                    sortedfield=hb.sortedfield,Hotel_ID=hb.Hotel_ID,
+                                    Hotel_Name=(from h in Hoteldata
+                                               where h.Item1 == hb.Hotel_ID
+                                               select h.Item2).FirstOrDefault(),
+                                    images= HotelBranchImageUrls}).FirstOrDefault();
 
             if (hotelBranchTB == null)
             {
