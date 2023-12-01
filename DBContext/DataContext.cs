@@ -21,6 +21,12 @@ namespace Hotel_Managment_API.DBContext
 
         public DbSet<RoomTB> RoomTB => Set<RoomTB>();
 
+        public DbSet<UserRole> UserRole => Set<UserRole>();
+
+        public DbSet<Hotel_Managment_API.Models.UserRegistration> UserRegistration { get; set; }
+
+        public DbSet<Hotel_Managment_API.Models.RelationshipTB> RelationshipTB { get; set; }
+
 
     }
 }
