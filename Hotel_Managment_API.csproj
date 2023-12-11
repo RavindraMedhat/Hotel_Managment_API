@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Public\images\hotelBranch\" />
+    <Folder Include="Public\images\HotelRoom\" />
     <Folder Include="Public\images\User\" />
   </ItemGroup>
 

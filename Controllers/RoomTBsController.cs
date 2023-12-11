@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -29,17 +30,35 @@ namespace Hotel_Managment_API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomTB>>> GetRoomTB()
         {
+
             return await _context.RoomTB.ToListAsync();
         }
 
         [HttpGet("ByBranchID/{id}")]
-        public async Task<ActionResult<IEnumerable<RoomTB>>> GetHotelBranchByHotelID(int id)
+        public async Task<ActionResult<IEnumerable<RoomTBForIndex>>> GetHotelBranchByHotelID(int id)
         {
-            List<RoomTB> roomTB = (from r in await _context.RoomTB.ToListAsync()
-                                   where r.Delete_Flag == false && r.Branch_ID == id
-                                   select r).ToList();
+            //List<RoomTB> roomTB = (from r in await _context.RoomTB.ToListAsync()
+            //                       where r.Delete_Flag == false && r.Branch_ID == id
+            //                       select r).ToList();
 
-            return roomTB;
+            //return roomTB;
+            List<ImageMasterTB> HotelsImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                   where i.ReferenceTB_Name == "RoomTB"
+                                                   select i).ToList();
+
+            List<RoomTBForIndex> data = (from r in await _context.RoomTB.ToListAsync()
+                                         where r.Delete_Flag == false && r.Branch_ID == id
+                                         select new RoomTBForIndex
+                                         {
+                                             Room_ID = r.Room_ID,
+                                             Room_No = r.Room_No,
+                                             Iminity_NoOfBed = r.Iminity_NoOfBed,
+                                             Room_Price = r.Room_Price,
+                                             Category_ID = r.Category_ID,
+                                             Image_URl = HotelsImageUrls.Where(i => i.Reference_ID == r.Room_ID)
+                                             .Select(i => "http://localhost:17312/api/img/HotelRoom/" + i.Image_URl).ToList()
+                                         }).ToList();
+            return data;
         }
 
         // GET: api/RoomTBs/5
@@ -92,9 +111,40 @@ namespace Hotel_Managment_API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<RoomTB>> PostRoomTB(RoomTB roomTB)
+        public async Task<ActionResult<RoomTB>> PostRoomTB([FromForm] RoomCreateModel roomCreateModel)
         {
+            RoomTB roomTB = new RoomTB { Active_Flag = roomCreateModel.Active_Flag, Branch_ID = roomCreateModel.Branch_ID, Category_ID = roomCreateModel.Category_ID,Delete_Flag=roomCreateModel.Delete_Flag,Hotel_ID=roomCreateModel.Hotel_ID,Iminity_Bath=roomCreateModel.Iminity_Bath,Iminity_NoOfBed=roomCreateModel.Iminity_NoOfBed,Iminity_Pool=roomCreateModel.Iminity_Pool,Room_Description=roomCreateModel.Room_Description,Room_No=roomCreateModel.Room_No,Room_Price=roomCreateModel.Room_Price,sortedfield=roomCreateModel.sortedfield};
             _context.RoomTB.Add(roomTB);
+            await _context.SaveChangesAsync();
+
+            if (roomCreateModel.Photos != null && roomCreateModel.Photos.Count > 0)
+            {
+                foreach (IFormFile photo in roomCreateModel.Photos)
+                {
+                    String upfolder = Path.Combine(_env.ContentRootPath, "./Public/images/HotelRoom");
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+                    String filePath = Path.Combine(upfolder, uniqueFileName);
+                    using (var filesStrime = new FileStream(filePath, FileMode.Create))
+                    {
+                        photo.CopyTo(filesStrime);
+                    }
+
+                    ImageMasterTB im = new ImageMasterTB
+                    {
+                        Image_URl = uniqueFileName,
+                        Reference_ID = roomTB.Room_ID,
+                        ReferenceTB_Name = "RoomTB",
+                        Active_Flag = true,
+                        Delete_Flag = false,
+                        sortedfield = 99
+                    };
+                    _context.imageMasterTBs.Add(im);
+                    await _context.SaveChangesAsync();
+
+                }
+
+            }
+                      _context.RoomTB.Add(roomTB);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRoomTB", new { id = roomTB.Room_ID }, roomTB);

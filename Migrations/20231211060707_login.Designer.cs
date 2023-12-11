@@ -4,14 +4,16 @@ using Hotel_Managment_API.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hotel_Managment_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231211060707_login")]
+    partial class login
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -276,23 +278,6 @@ namespace Hotel_Managment_API.Migrations
                     b.HasKey("Room_ID");
 
                     b.ToTable("RoomTB");
-                });
-
-            modelBuilder.Entity("Hotel_Managment_API.Models.User", b =>
-                {
-                    b.Property<string>("EmailID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("User_ID")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmailID");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Hotel_Managment_API.Models.UserRegistration", b =>

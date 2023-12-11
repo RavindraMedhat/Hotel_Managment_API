@@ -128,7 +128,16 @@ namespace Hotel_Managment_API.Controllers
                     };
                     _context.RelationshipTB.Add(relationshipTB);
                     await _context.SaveChangesAsync();
-                    
+                    User user = new User
+                    {
+                        EmailID = userRegistration.Email,
+                        User_ID = userRegistration.User_ID,
+                        Password = "12345678"
+
+                    };
+                    _context.User.Add(user);
+
+                    await _context.SaveChangesAsync();
                 }
 
             }
@@ -180,7 +189,16 @@ namespace Hotel_Managment_API.Controllers
                     };
                     _context.RelationshipTB.Add(relationshipTB);
                     await _context.SaveChangesAsync();
+                    User user = new User
+                    {
+                        EmailID = userRegistration.Email,
+                        User_ID = userRegistration.User_ID,
+                        Password = "12345678"
 
+                    };
+                    _context.User.Add(user);
+
+                    await _context.SaveChangesAsync();
                 }
 
             }
@@ -230,6 +248,16 @@ namespace Hotel_Managment_API.Controllers
 
                     };
                     _context.RelationshipTB.Add(relationshipTB);
+
+                    User user = new User
+                    {
+                        EmailID = userRegistration.Email,
+                        User_ID = userRegistration.User_ID,
+                        Password = "12345678"
+
+                    };
+                    _context.User.Add(user);
+
                     await _context.SaveChangesAsync();
                 }
 
@@ -295,6 +323,11 @@ namespace Hotel_Managment_API.Controllers
 
             return userRegistration;
         }
+
+
+   
+
+
 
         private bool UserRegistrationExists(int id)
         {
