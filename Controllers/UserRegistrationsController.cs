@@ -299,7 +299,19 @@ namespace Hotel_Managment_API.Controllers
                     };
                     _context.imageMasterTBs.Add(im);
                     await _context.SaveChangesAsync();
-                    
+                    int rid = _context.UserRole
+                             .Where(r => r.Role_Name == "Customer")
+                             .Select(r => r.Role_ID)
+                              .FirstOrDefault();
+                    RelationshipTB relationshipTB = new RelationshipTB
+                    {
+                        User_ID = userRegistration.User_ID,
+                        Role_ID = rid
+
+                    };
+                    _context.RelationshipTB.Add(relationshipTB);
+                    await _context.SaveChangesAsync();
+
                 }
 
             }

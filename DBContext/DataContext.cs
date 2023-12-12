@@ -29,6 +29,8 @@ namespace Hotel_Managment_API.DBContext
 
         public DbSet<Hotel_Managment_API.Models.User> User { get; set; }
 
+        public DbSet<Hotel_Managment_API.Models.Discount> Discount { get; set; }
+
 
     }
 }
