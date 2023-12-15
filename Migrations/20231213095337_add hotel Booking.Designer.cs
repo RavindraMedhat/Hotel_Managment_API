@@ -4,14 +4,16 @@ using Hotel_Managment_API.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hotel_Managment_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231213095337_add hotel Booking")]
+    partial class addhotelBooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,10 +41,10 @@ namespace Hotel_Managment_API.Migrations
                     b.Property<int>("Branch_ID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Check_In_Date")
+                    b.Property<DateTime>("Check_In_Time")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Check_Out_Date")
+                    b.Property<DateTime>("Check_Out_Time")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Coupon_Code")

@@ -173,7 +173,7 @@ namespace Hotel_Managment_API.Controllers
             }
             hotelTB.Delete_Flag = true;
            // _context.hotels.Remove(hotelTB);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();  
 
             return hotelTB;
         }

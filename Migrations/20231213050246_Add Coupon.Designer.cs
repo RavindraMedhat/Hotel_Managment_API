@@ -4,87 +4,22 @@ using Hotel_Managment_API.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hotel_Managment_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231213050246_Add Coupon")]
+    partial class AddCoupon
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Hotel_Managment_API.Models.Booking", b =>
-                {
-                    b.Property<int>("Booking_ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Active_Flag")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("Booking_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Booking_Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Branch_ID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Check_In_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Check_Out_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Coupon_Code")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Customer_status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Delete_Flag")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Discount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Group_ID")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Payed_Amount")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Payment_Mode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Payment_Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Room_ID")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Sortedfield")
-                        .HasColumnType("real");
-
-                    b.Property<int>("User_ID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Booking_ID");
-
-                    b.ToTable("Booking");
-                });
 
             modelBuilder.Entity("Hotel_Managment_API.Models.Coupon", b =>
                 {
@@ -95,10 +30,6 @@ namespace Hotel_Managment_API.Migrations
 
                     b.Property<bool>("Active_Flag")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Coupon_Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Coupon_Name")
                         .IsRequired()
@@ -112,9 +43,6 @@ namespace Hotel_Managment_API.Migrations
 
                     b.Property<DateTime>("Expiry_Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Hotel_ID")
-                        .HasColumnType("int");
 
                     b.Property<float>("Sortedfield")
                         .HasColumnType("real");
@@ -150,9 +78,6 @@ namespace Hotel_Managment_API.Migrations
 
                     b.Property<DateTime>("End_Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Hotel_ID")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Start_Date")
                         .HasColumnType("datetime2");

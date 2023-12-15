@@ -22,10 +22,14 @@ namespace Hotel_Managment_API.Controllers
         }
 
         // GET: api/Discounts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Discount>>> GetDiscount()
+        [HttpGet("ByHotelID/{id}")]
+
+        public async Task<ActionResult<IEnumerable<Discount>>> GetDiscountByHid(int id)
         {
-            return await _context.Discount.ToListAsync();
+            List<Discount> data = (from d in await _context.Discount.ToListAsync()
+                                   where d.Hotel_ID == id
+                                   select d).ToList();
+            return data ;
         }
 
         // GET: api/Discounts/5

@@ -31,6 +31,10 @@ namespace Hotel_Managment_API.DBContext
 
         public DbSet<Hotel_Managment_API.Models.Discount> Discount { get; set; }
 
+        public DbSet<Hotel_Managment_API.Models.Coupon> Coupon { get; set; }
+
+        public DbSet<Hotel_Managment_API.Models.Booking> Booking { get; set; }
+
 
     }
 }

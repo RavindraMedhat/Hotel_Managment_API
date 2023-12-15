@@ -9,6 +9,7 @@ using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Hotel_Managment_API.ViewModels;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -63,16 +64,36 @@ namespace Hotel_Managment_API.Controllers
 
         // GET: api/RoomTBs/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RoomTB>> GetRoomTB(int id)
+        public async Task<ActionResult<RoomViewModelForDetails>> GetRoomTB(int id)
         {
-            var roomTB = await _context.RoomTB.FindAsync(id);
+            RoomTB roomTB = await _context.RoomTB.FindAsync(id);
+           
+            List<string> ImageUrls = (from i in await _context.imageMasterTBs.ToListAsync()
+                                                        where i.ReferenceTB_Name == "RoomTB" && i.Reference_ID==roomTB.Room_ID
+                                                        select @"http://localhost:17312/api/img/HotelRoom/" + i.Image_URl).ToList();
+            string C_Name = (from c in await _context.roomCategoryTB.ToListAsync()
+                             where  c.Category_ID == roomTB.Category_ID
+                             select c.Category_Name).FirstOrDefault();
+            RoomViewModelForDetails roomViewModelForDetails = new RoomViewModelForDetails()
+            {
+                Room_ID=roomTB.Room_ID,
+                Category_Name = C_Name,
+                Image_URl= ImageUrls,
+                Iminity_Bath=roomTB.Iminity_Bath,
+                Iminity_NoOfBed=roomTB.Iminity_NoOfBed,
+                Iminity_Pool=roomTB.Iminity_Pool,
+                Room_Description=roomTB.Room_Description,
+                Room_No=roomTB.Room_No,
+                Room_Price=roomTB.Room_Price,
+                Branch_ID=roomTB.Branch_ID,
+            };
 
-            if (roomTB == null)
+            if (roomViewModelForDetails == null)
             {
                 return NotFound();
             }
 
-            return roomTB;
+            return roomViewModelForDetails;
         }
 
         // PUT: api/RoomTBs/5

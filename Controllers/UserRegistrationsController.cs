@@ -9,6 +9,7 @@ using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Hotel_Managment_API.ViewModels;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -32,6 +33,28 @@ namespace Hotel_Managment_API.Controllers
         public async Task<ActionResult<IEnumerable<UserRegistration>>> GetUserRegistration()
         {
             return await _context.UserRegistration.ToListAsync();
+        }
+
+        [HttpGet("getCustomerForDropdown")]
+        public async Task<ActionResult<IEnumerable<CustomerForDropdown>>> GetUserRegistrationCustomerForDropdown()
+        {
+            int roalId = (from r in await _context.UserRole.ToListAsync()
+                          where r.Role_Name == "Customer"
+                          select r.Role_ID).FirstOrDefault();
+            List<UserRegistration> users = await _context.UserRegistration.ToListAsync();
+
+            List<CustomerForDropdown> Customers = (from ur in await _context.RelationshipTB.ToListAsync()
+                                                   where ur.Role_ID == roalId
+                                                   select new CustomerForDropdown
+                                                   {
+                                                       User_ID = ur.User_ID,
+                                                       Name = (from u in users
+                                                               where u.User_ID == ur.User_ID
+                                                               select u.First_Name + 
+                                                               " "+u.Last_Name).FirstOrDefault()
+                                                   }).ToList();
+
+            return Customers;
         }
 
         // GET: api/UserRegistrations/5
