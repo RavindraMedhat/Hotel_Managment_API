@@ -126,6 +126,7 @@ namespace Hotel_Managment_API.Controllers
         public async Task<ActionResult<HotelTB>> PostHotelTB([FromForm] HotelTBCreatModel hotelTBCreat)
         {
             HotelTB hotelTB = new HotelTB {Active_Flag=hotelTBCreat.Active_Flag,Address=hotelTBCreat.Address,Contact_No= hotelTBCreat.Contact_No,Contect_Person= hotelTBCreat.Contect_Person,Delete_Flag= hotelTBCreat.Delete_Flag,Email_Adderss= hotelTBCreat.Email_Adderss,Hotel_Description= hotelTBCreat.Hotel_Description,Hotel_map_coordinate= hotelTBCreat.Hotel_map_coordinate,Hotel_Name= hotelTBCreat.Hotel_Name,sortedfield= hotelTBCreat.sortedfield,Standard_check_In_Time= hotelTBCreat.Standard_check_In_Time,Standard_check_out_Time= hotelTBCreat.Standard_check_out_Time };
+
             _context.hotels.Add(hotelTB);
             await _context.SaveChangesAsync();
 

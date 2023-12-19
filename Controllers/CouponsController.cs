@@ -85,6 +85,11 @@ namespace Hotel_Managment_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Coupon>> PostCoupon(CouponViewModelForCreate coupon)
         {
+            if (coupon.Start_Date.Date > coupon.Expiry_Date.Date || coupon.Expiry_Date.Date < DateTime.Now.Date || coupon.Start_Date.Date < DateTime.Now.Date)
+            {
+                return BadRequest(new { Errormessage = "Invalid start / Expiry date" });
+
+            }
             string GenerateRandomString(int length)
             {
                 const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

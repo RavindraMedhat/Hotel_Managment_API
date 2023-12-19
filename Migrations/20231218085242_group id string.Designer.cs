@@ -4,51 +4,22 @@ using Hotel_Managment_API.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hotel_Managment_API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231218085242_group id string")]
+    partial class groupidstring
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Hotel_Managment_API.Models.Billing", b =>
-                {
-                    b.Property<int>("Bill_ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Bill_Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float>("Discount_Amount")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Final_Amount")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Group_ID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Payed_Amount")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Total_Amount")
-                        .HasColumnType("real");
-
-                    b.HasKey("Bill_ID");
-
-                    b.ToTable("Billing");
-                });
 
             modelBuilder.Entity("Hotel_Managment_API.Models.Booking", b =>
                 {

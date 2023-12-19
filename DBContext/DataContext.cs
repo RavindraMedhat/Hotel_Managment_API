@@ -35,6 +35,8 @@ namespace Hotel_Managment_API.DBContext
 
         public DbSet<Hotel_Managment_API.Models.Booking> Booking { get; set; }
 
+        public DbSet<Hotel_Managment_API.Models.Billing> Billing { get; set; }
+
 
     }
 }

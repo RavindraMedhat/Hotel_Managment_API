@@ -119,9 +119,30 @@ namespace Hotel_Managment_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Booking>> PostBooking(Booking booking)
         {
-            List<Booking> bookings = (from b in await _context.Booking.ToListAsync()
-                                     where b.Room_ID == booking.Room_ID
-                                     select b).ToList();
+            if (booking.Coupon_Code != null)
+            {
+                int hid =( await _context.hotelBranchTBs.FindAsync(booking.Branch_ID)).Hotel_ID;
+
+
+               List<Coupon> coupons = (from c in await _context.Coupon.ToListAsync()
+                                  where c.Coupon_Code == booking.Coupon_Code && c.Start_Date.Date <= DateTime.Now.Date && c.Expiry_Date.Date >= DateTime.Now.Date && c.Hotel_ID==hid
+                                  select c).ToList();
+                if (coupons.Count == 0)
+                {
+                    return BadRequest(new { Errormessage = "ianvlid coupon code" });
+                }
+            }
+            
+
+            if (booking.Check_In_Date.Date > booking.Check_Out_Date.Date || booking.Check_Out_Date.Date < DateTime.Now.Date || booking.Check_In_Date.Date < DateTime.Now.Date)
+            {
+                return BadRequest(new { Errormessage = "Invalid Check in / check out date" });
+
+            }
+
+            List < Booking > bookings = (from b in await _context.Booking.ToListAsync()
+                                         where b.Room_ID == booking.Room_ID
+                                         select b).ToList();
             
             DateTime ErrorDate = DateTime.Now ;
             bool IsError = false;
@@ -151,7 +172,7 @@ namespace Hotel_Managment_API.Controllers
             {
                 return BadRequest(new { Errormessage = ErrorDate.Date.ToString()+"  is not available" });
             }
-
+            booking.Group_ID = booking.User_ID + "_" + booking.Branch_ID +"_" + DateTime.Now.Date;
             _context.Booking.Add(booking);
             await _context.SaveChangesAsync();
 
