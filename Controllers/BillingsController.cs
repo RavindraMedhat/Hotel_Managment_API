@@ -82,6 +82,8 @@ namespace Hotel_Managment_API.Controllers
         [HttpPost("{Gid}")]
         public async Task<ActionResult<Billing>> PostBilling(string Gid)
         {
+            BillRes billRes = new BillRes();
+
             List<Booking> bookings = (from b in await _context.Booking.ToListAsync()
                                      where b.Group_ID == Gid 
                                      select b).ToList();
@@ -105,8 +107,19 @@ namespace Hotel_Managment_API.Controllers
                 {
                     if(r.Room_ID == b.Room_ID)
                     {
+                        var userRegistration = await _context.UserRegistration.FindAsync(b.User_ID);
 
-                        billing.Total_Amount = billing.Total_Amount +( r.Room_Price * (b.Check_Out_Date - b.Check_In_Date).Days ) ;
+                        billRes.Email = userRegistration.Email;
+                        billRes.CustomerName = userRegistration.First_Name+" "+userRegistration.Last_Name ;
+
+                        var hotelBranch = await _context.hotelBranchTBs.FindAsync(b.Branch_ID);
+                        billRes.HotelBranch = hotelBranch.Branch_Name;
+
+                        var hotel = await _context.hotels.FindAsync(hotelBranch.Hotel_ID);
+                        billRes.HotelName = hotel.Hotel_Name;
+
+
+                        billing.Total_Amount = billing.Total_Amount +( r.Room_Price * ((b.Check_Out_Date - b.Check_In_Date).Days +1) ) ;
                         details.Add(new Details() {detail = r.Room_No +" * "+((b.Check_Out_Date -b.Check_In_Date).Days+1) +" days",amount= r.Room_Price *(1+ (b.Check_Out_Date - b.Check_In_Date).Days) });
 
                         if(b.Payed_Amount != 0)
@@ -159,9 +172,9 @@ namespace Hotel_Managment_API.Controllers
                 billing.Bill_Date = bill.Bill_Date;
             }
 
-            BillRes billRes = new BillRes();
             billRes.bill = billing;
             billRes.details = details;
+
             return CreatedAtAction("GetBilling", new { id = billing.Bill_ID }, billRes);
         }
 

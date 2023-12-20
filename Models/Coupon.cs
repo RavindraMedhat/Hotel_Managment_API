@@ -27,6 +27,12 @@ namespace Hotel_Managment_API.Models
         [Required]
 
         public int Discount_Percentage { get; set; }
+
+        [Required]
+        public bool Assign_Flag { get; set; }
+
+        public int Assign_UId { get; set; }
+
         [Required]
         public bool Active_Flag { get; set; }
         [Required]

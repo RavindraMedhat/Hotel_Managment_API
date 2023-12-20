@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Hotel_Managment_API.DBContext;
 using Hotel_Managment_API.Models;
 using System.Text;
+using Hotel_Managment_API.ViewModels;
+using System.Net.Mail;
+using System.Net;
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -22,14 +25,103 @@ namespace Hotel_Managment_API.Controllers
             _context = context;
         }
 
+        [HttpPost("SendEmail")]
+        public async Task<ActionResult<Coupon>> SendEmail(ReqSendCoupen reqSendCoupen)
+        {
+            List<Coupon> coupons = (from c in await _context.Coupon.ToListAsync()
+                                    where c.Hotel_ID == reqSendCoupen.hid && c.Coupon_Name == reqSendCoupen.Cname && c.Assign_Flag == false
+                                    select c).ToList();
+
+            List<UserRegistration> users = (await _context.UserRegistration.ToListAsync()).Where(user => reqSendCoupen.userIds.Contains(user.User_ID)).ToList();
+
+            if (coupons.Count >= users.Count)
+            {
+                int index = 0;
+
+                foreach(Coupon c in coupons)
+                {
+                    if (index == users.Count)
+                    {
+                        break;
+                    }
+                    c.Assign_Flag = true;
+                    c.Assign_UId = users[index].User_ID;
+                        
+
+                   // var client = new SmtpClient("smtp-mail.gmail.com", 587)
+                   // {
+                   //     EnableSsl = true,
+                   //     //UseDefaultCredentials = false,
+                   //     Credentials = new NetworkCredential("mazzking666@gmail.com", "xctj naln sjnj gjsv")
+                   // };
+
+                   //await client.SendMailAsync(
+                   // new MailMessage(from: "mazzking666@gmail.com",
+                   // to: users[index].Email,
+                   // "you get coupon ",
+                   // $@"Your {c.Discount_Percentage} %  Discount Coupon Code :- {c.Coupon_Code} It's  Start_Date:- {c.Start_Date}Expiry_Date :- {c.Expiry_Date}"
+                   // ));
+
+                    try
+                    {
+                        var smtpClient = new SmtpClient("smtp.gmail.com", 587)
+                        {
+                            EnableSsl = true,
+                            Credentials = new NetworkCredential("mazzking666@gmail.com", "xctj naln sjnj gjsv"),
+                            DeliveryMethod = SmtpDeliveryMethod.Network,
+                            Timeout = 20000, // Adjust the timeout as needed
+                        };
+
+                        var mailMessage = new MailMessage
+                        {
+                            From = new MailAddress("mazzking666@gmail.com"),
+                            Subject = "You've got a coupon!",
+                            Body = $"Your {c.Discount_Percentage}% Discount Coupon Code: {c.Coupon_Code}. Start Date: {c.Start_Date}, Expiry Date: {c.Expiry_Date}",
+                            IsBodyHtml = false, // You can set this to true if you want to send HTML content
+                        };
+
+                        mailMessage.To.Add(users[index].Email);
+
+                        await smtpClient.SendMailAsync(mailMessage);
+                        index++;
+                        _context.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle exceptions (log, etc.)
+                        Console.WriteLine($"Error sending email: {ex.Message}");
+                    }
+
+                    //user: 'mazzking666@gmail.com',  
+                    //pass: 'xctj naln sjnj gjsv',
+                    
+                }
+            }
+
+            return CreatedAtAction("SendCoupon", new {  });
+        }
+
         // GET: api/Coupons
         [HttpGet("ByHotelID/{id}")]
-        public async Task<ActionResult<IEnumerable<Coupon>>> GetCouponByHotelId(int id)
+        public async Task<ActionResult<IEnumerable<couponViewModelForIndex>>> GetCouponByHotelId(int id)
         {
             List<Coupon> data = (from c in await _context.Coupon.ToListAsync()
-                                   where c.Hotel_ID == id
+                                   where c.Hotel_ID == id && c.Assign_Flag == false
                                    select c).ToList();
-            return data;
+
+            List<couponViewModelForIndex> Cdata = data
+        .GroupBy(c => c.Coupon_Name)
+        .Select(group => new couponViewModelForIndex
+        {
+            Coupon_Name = group.Key,
+            Start_Date = group.First().Start_Date,
+            Expiry_Date = group.First().Expiry_Date,
+            Discount_Percentage = group.First().Discount_Percentage,
+            noOfAvailableCoupen = group.Count()
+        })
+        .ToList();
+
+            return Cdata;
            // return await _context.Coupon.ToListAsync();
         }
 
@@ -117,7 +209,9 @@ namespace Hotel_Managment_API.Controllers
                     Expiry_Date=coupon.Expiry_Date,
                     Hotel_ID=coupon.Hotel_ID,
                     Sortedfield=coupon.Sortedfield,
-                    Start_Date=coupon.Start_Date
+                    Start_Date=coupon.Start_Date,
+                    Assign_Flag=false,
+                    Assign_UId=0,
                 };
             _context.Coupon.Add(NewCoupon);
             
@@ -147,5 +241,7 @@ namespace Hotel_Managment_API.Controllers
         {
             return _context.Coupon.Any(e => e.Coupon_ID == id);
         }
+
+
     }
 }

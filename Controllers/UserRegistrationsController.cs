@@ -10,6 +10,9 @@ using Hotel_Managment_API.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Hotel_Managment_API.ViewModels;
+using System.Net.Mail;
+using System.Net;
+
 
 namespace Hotel_Managment_API.Controllers
 {
@@ -50,8 +53,34 @@ namespace Hotel_Managment_API.Controllers
                                                        User_ID = ur.User_ID,
                                                        Name = (from u in users
                                                                where u.User_ID == ur.User_ID
-                                                               select u.First_Name + 
-                                                               " "+u.Last_Name).FirstOrDefault()
+                                                               select u.First_Name +
+                                                               " " + u.Last_Name).FirstOrDefault()
+                                                   }).ToList();
+
+            return Customers;
+        }
+        [HttpGet("getCustomerForEmail")]
+        public async Task<ActionResult<IEnumerable<UserAndEmail>>> GetUserRegistrationCustomerForEmail()
+        {
+            int roalId = (from r in await _context.UserRole.ToListAsync()
+                          where r.Role_Name == "Customer"
+                          select r.Role_ID).FirstOrDefault();
+            List<UserRegistration> users = await _context.UserRegistration.ToListAsync();
+
+            List<UserAndEmail> Customers = (from ur in await _context.RelationshipTB.ToListAsync()
+                                                   where ur.Role_ID == roalId
+                                                   select new UserAndEmail
+                                                   {
+                                                       User_ID = ur.User_ID,
+                                                       Name = (from u in users
+                                                               where u.User_ID == ur.User_ID
+                                                               select u.First_Name +
+                                                               " " + u.Last_Name
+                                                               ).FirstOrDefault(),
+                                                        Email= (from u in users
+                                                               where u.User_ID == ur.User_ID
+                                                               select u.Email
+                                                               ).FirstOrDefault(),
                                                    }).ToList();
 
             return Customers;
