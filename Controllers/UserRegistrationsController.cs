@@ -322,9 +322,10 @@ namespace Hotel_Managment_API.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult<UserRegistration>> PostUserRegistration([FromForm]UserRegistrationCreateModel UserRegistrationCreateModel)
+        public async Task<ActionResult<UserRegistration>> PostUserRegistration([FromForm]UserRegistrationCreateModelForCustomer UserRegistrationCreateModel)
         {
-            UserRegistration userRegistration = new UserRegistration { Active_Flag = UserRegistrationCreateModel.Active_Flag, ConatactNo = UserRegistrationCreateModel.ConatactNo, Delete_Flag = UserRegistrationCreateModel.Delete_Flag, DOB = UserRegistrationCreateModel.DOB, Email = UserRegistrationCreateModel.Email, First_Name = UserRegistrationCreateModel.First_Name, Gender = UserRegistrationCreateModel.Gender, Last_Name = UserRegistrationCreateModel.Last_Name, sortedfield = UserRegistrationCreateModel.sortedfield, State = UserRegistrationCreateModel.State };
+            UserRegistration userRegistration = new UserRegistration { Active_Flag =true, ConatactNo = UserRegistrationCreateModel.ConatactNo, Delete_Flag = false, DOB = UserRegistrationCreateModel.DOB, Email = UserRegistrationCreateModel.Email,
+                First_Name = UserRegistrationCreateModel.First_Name, Gender = UserRegistrationCreateModel.Gender, Last_Name = UserRegistrationCreateModel.Last_Name, sortedfield = 99, State = UserRegistrationCreateModel.State };
             _context.UserRegistration.Add(userRegistration);
             await _context.SaveChangesAsync();
 
@@ -361,6 +362,15 @@ namespace Hotel_Managment_API.Controllers
                         Role_ID = rid
 
                     };
+
+                    User user = new User
+                    {
+                        EmailID = userRegistration.Email,
+                        User_ID = userRegistration.User_ID,
+                        Password = UserRegistrationCreateModel.Password
+                    };
+                    _context.User.Add(user);
+
                     _context.RelationshipTB.Add(relationshipTB);
                     await _context.SaveChangesAsync();
 
@@ -387,11 +397,6 @@ namespace Hotel_Managment_API.Controllers
 
             return userRegistration;
         }
-
-
-   
-
-
 
         private bool UserRegistrationExists(int id)
         {

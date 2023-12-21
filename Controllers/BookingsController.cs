@@ -60,11 +60,11 @@ namespace Hotel_Managment_API.Controllers
                 {
                     UserRegistration customer = await _context.UserRegistration.FindAsync(book.User_ID);
 
-                    finalData.Add(new ViewModelForAvailability { Availability = "Booked", Booking_ID = book.Booking_ID, Date = data.date, Room_ID = book.Room_ID, Customer_Name = customer.First_Name+" "+customer.Last_Name });
+                    finalData.Add(new ViewModelForAvailability { Availability = "Booked", Booking_ID = book.Booking_ID, Date = data.date, Room_ID = book.Room_ID, Customer_Name = customer.First_Name+" "+customer.Last_Name, Customer_Id=customer.User_ID });
                 }
                 else
                 {
-                    finalData.Add(new ViewModelForAvailability { Availability = "Available", Booking_ID = 0, Date = data.date, Room_ID = 0, Customer_Name = "-" });
+                    finalData.Add(new ViewModelForAvailability { Availability = "Available", Booking_ID = 0, Date = data.date, Room_ID = 0, Customer_Name = "-",Customer_Id=0 });
                 }
 
                data.date = data.date.AddDays(1);

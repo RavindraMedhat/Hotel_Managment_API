@@ -10,7 +10,7 @@ namespace Hotel_Managment_API.Models
     public class LoginResponse
     {
         public bool Success { get; set; }
-
+        public int UId { get; set; }
         public string Message { get; set; }
 
         public string Redirect { get; set; }

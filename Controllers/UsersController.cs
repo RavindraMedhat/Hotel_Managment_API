@@ -50,16 +50,17 @@ namespace Hotel_Managment_API.Controllers
                 Message = "",
                 RedirctID = 0,
                 Redirect = "",
-                Role = ""
+                Role = "",
+                UId = 0,
             };
 
             User user = (from u in await _context.User.ToListAsync()
-                         where u.EmailID == loginrequest.EmailID && u.Password == loginrequest.Password
+                         where u.EmailID.ToLower() == loginrequest.EmailID.ToLower() && u.Password == loginrequest.Password
                          select u).FirstOrDefault();
             if (user == null)
             {
                 User userc = (from u in await _context.User.ToListAsync()
-                              where u.EmailID == loginrequest.EmailID
+                              where u.EmailID.ToLower() == loginrequest.EmailID.ToLower()
                               select u).FirstOrDefault();
                 loginResponse.Success = false;
                 if (userc == null)
@@ -75,11 +76,15 @@ namespace Hotel_Managment_API.Controllers
             {
                 loginResponse.Success = true;
                 loginResponse.Message = "";
+                loginResponse.UId = user.User_ID;
 
-                RelationshipTB userr = (from r in await _context.RelationshipTB.ToListAsync()
+                List<RelationshipTB> relationshipTBs = await _context.RelationshipTB.ToListAsync();
+
+                RelationshipTB userr = (from r in relationshipTBs
                                         where r.User_ID == user.User_ID
                                         select r
                                         ).FirstOrDefault();
+
                 UserRole userRole = (from ur in await _context.UserRole.ToListAsync()
                                      where ur.Role_ID == userr.Role_ID
                                      select ur).FirstOrDefault();
@@ -103,6 +108,7 @@ namespace Hotel_Managment_API.Controllers
                     loginResponse.Redirect = "Room";
                     loginResponse.RedirctID = userr.Branch_ID;
                 }
+
                 loginResponse.Role = userRole.Role_Name;
             }
 

@@ -21,6 +21,8 @@ namespace Hotel_Managment_API.ViewModels
 
         [Required]
         public string Customer_Name { get; set; }
+        [Required]
+        public int Customer_Id { get; set; }
 
         [Required]
         public string Availability { get; set; }
