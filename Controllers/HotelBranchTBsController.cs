@@ -92,6 +92,7 @@ namespace Hotel_Managment_API.Controllers
                                                            Hotel_Name = (from h in Hoteldata
                                                                          where h.Item1 == hb.Hotel_ID
                                                                          select h.Item2).FirstOrDefault(),
+                                                           Address = hb.Branch_Address,
                                                            Image_URl = HotelBranchImageUrls
                                                            .Where(i => i.Reference_ID == hb.Branch_ID)
                                                            .Select(i => "http://localhost:17312/api/img/hotelBranch/" + i.Image_URl).ToList()
